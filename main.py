@@ -5,6 +5,7 @@ Usage::
     ./server.py [<port>]
 """
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import sevenseq.sevenseq as sevenseq
 import logging
 import json
 
@@ -30,12 +31,17 @@ class S(BaseHTTPRequestHandler):
 
 def cs_handle(raw):
     data = json.loads(raw)
+    print(data)
     weapons = data["player"]["weapons"]
     i = 0
     for w in weapons:
         cur = "weapon_" + str(i)
         if weapons[cur]["state"] == "active":
-            print(weapons[cur]["ammo_clip"])
+            try:
+                sevenseq.setnum(int(weapons[cur]["ammo_clip"]))
+                print(weapons[cur]["ammo_clip"])
+            except Exception as e:
+                print(str(e))
         i += 1
 
 def run(server_class=HTTPServer, handler_class=S, port=3000):
